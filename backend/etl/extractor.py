@@ -40,7 +40,7 @@ def harvest_all_papers(journal_slug):
             if meta is not None:
                 
                 penulis_tags = meta.findall('dc:creator', namespaces=NS)
-                daftar_penulis = ", ".join([p.text for p in penulis_tags if p.text])
+                daftar_penulis = "; ".join([p.text for p in penulis_tags if p.text])
 
                 paper = {
                     "id_artikel": header.findtext('oai:identifier', namespaces=NS),

@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+@theme {
+  /* Color tokens — research-intelligence dark theme */
+  --color-bg: #0a0e14;
+  --color-bg-elevated: #0d1219;
+  --color-surface: #10151f;
+  --color-surface-hover: #161c29;
+  --color-border: #1f2733;
+  --color-outline: #2a3441;
+
+  --color-text-primary: #e8eaed;
+  --color-text-secondary: #8b93a3;
+  --color-text-tertiary: #586173;
+
+  --color-violet: #7c5cff;
+  --color-violet-dim: rgba(124, 92, 255, 0.14);
+  --color-violet-border: rgba(124, 92, 255, 0.35);
+  --color-cyan: #00d9c0;
+  --color-cyan-dim: rgba(0, 217, 192, 0.14);
+  --color-amber: #ffb454;
+  --color-rose: #ff5c7a;
+
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+
+  --radius-card: 12px;
+  --radius-panel: 20px;
+
+  --shadow-glow: 0 0 0 1px rgba(124, 92, 255, 0.2), 0 8px 32px rgba(124, 92, 255, 0.12);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+::selection {
+  background: var(--color-violet-dim);
+  color: var(--color-text-primary);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(24px); opacity: 0.4; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

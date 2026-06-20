@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
 import os
 from sentence_transformers import SentenceTransformer
@@ -58,9 +59,9 @@ def auto_run_pipeline():
 async def lifespan(app: FastAPI):
     scheduler = BackgroundScheduler()
     
-    scheduler.add_job(auto_run_pipeline, 'interval', minutes=1)
+    # scheduler.add_job(auto_run_pipeline, 'interval', minutes=1)
     
-    # scheduler.add_job(auto_run_pipeline, 'cron', day_of_week='sun', hour=0, minute=0)
+    scheduler.add_job(auto_run_pipeline, 'cron', day_of_week='sun', hour=0, minute=0)
     
     scheduler.start()
     print("[INFO] Mesin Scheduler otomatis diaktifkan.")
@@ -71,6 +72,18 @@ async def lifespan(app: FastAPI):
     print("[INFO] Mesin Scheduler dimatikan.")
 
 app = FastAPI(title="API Paper Cerdas v2 (Cloud Vector)", lifespan=lifespan)
+
+
+_default_origins = "http://localhost:5173,http://127.0.0.1:5173"
+allowed_origins = os.getenv("FRONTEND_ORIGINS", _default_origins).split(",")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def read_root():
@@ -88,6 +101,11 @@ def semantic_search(query: str, limit: int = 5):
     
     return response.data
 
+def buat_id_penulis_unik(nama):
+    kata_kata = nama.replace(",", " ").replace(".", " ").lower().split()
+    kata_kata.sort()
+    return " ".join(kata_kata)
+
 @app.get("/papers/graph")
 def get_graph_data(limit: int = 50):
     response = supabase.table("papers").select("id_artikel, judul, penulis").limit(limit).execute()
@@ -104,15 +122,17 @@ def get_graph_data(limit: int = 50):
             node_ids.add(paper_id)
             
         if item['penulis'] and item['penulis'] != "-":
-            authors = [a.strip() for a in item['penulis'].split(",") if a.strip()]
+            authors = [a.strip() for a in item['penulis'].split(";") if a.strip()]
             
             for author in authors:
-                if author not in node_ids:
-                    nodes.append({"id": author, "label": author, "group": "author"})
-                    node_ids.add(author)
+                author_id_unik = buat_id_penulis_unik(author)
+                
+                if author_id_unik not in node_ids:
+                    nodes.append({"id": author_id_unik, "label": author, "group": "author"})
+                    node_ids.add(author_id_unik)
                 
                 edges.append({
-                    "source": author,
+                    "source": author_id_unik, 
                     "target": paper_id,
                     "relation": "wrote"
                 })
