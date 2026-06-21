@@ -57,19 +57,11 @@ def auto_run_pipeline():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    scheduler = BackgroundScheduler()
-    
-    # scheduler.add_job(auto_run_pipeline, 'interval', minutes=1)
-    
-    scheduler.add_job(auto_run_pipeline, 'cron', day_of_week='sun', hour=0, minute=0)
-    
-    scheduler.start()
-    print("[INFO] Mesin Scheduler otomatis diaktifkan.")
+    print("[INFO] Server FastAPI menyala (Mode Endpoint API Only).")
     
     yield 
     
-    scheduler.shutdown()
-    print("[INFO] Mesin Scheduler dimatikan.")
+    print("[INFO] Server FastAPI dimatikan.")
 
 app = FastAPI(title="API Paper Cerdas v2 (Cloud Vector)", lifespan=lifespan)
 
